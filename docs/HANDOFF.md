@@ -232,6 +232,7 @@ Thermal тем же пайплайном, затем late fusion с modality dro
 README.md              старт, команды, порядок работ
 docs/HANDOFF.md        этот файл
 docs/findings.md       вся разведка: выводы, цифры, разбор чужих решений
+docs/models.md         кандидаты по модальностям, fusion, бюджет параметров
 docs/eda.md            обязательный чеклист EDA (20 вопросов, 4 блока)
 configs/default.yaml   подтверждённые константы
 inference.sh           деливерабл Stage 2: data_dir -> CSV
