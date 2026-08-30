@@ -1,0 +1,58 @@
+# CUHK-X Small Model Track -- constants confirmed from the challenge site,
+# the HF dataset card, and the public notebooks. Anything marked TODO is
+# unverified until the archives are actually on disk.
+
+task:
+  num_classes: 40
+  n_test_clips: 405
+  public_lb_clips: 201        # derived: every LB score is exactly k/201
+  metric: accuracy            # derived from the k/201 grid; confirm on Kaggle
+
+submission:
+  columns: [path, prediction] # prediction is int 0..39
+  path_example: "small_model_track_test/SM_test_0001/"
+  row_order: same as test.csv
+
+split:
+  announced_train_users: [1,2,3,4,5,6,7,8,9,16,17,18,19,20,21,22,23,24]
+  announced_test_users:  [10, 11, 25, 26]
+  private_test_users: 8       # held out, never released
+  # Local CV must be GroupKFold on user -- never random.
+  local_val_users: [8, 9, 23, 24]   # provisional; revisit after inventory
+
+modalities:                   # sizes/rates TODO until inventory + test index run
+  Depth_Color: {type: frames, ext: png, size: [640, 480], channels: 3,
+                note: "colorized depth -- invert the colormap to recover scalar depth"}
+  IR:          {type: frames, ext: png, size: [640, 480], channels: 1}
+  Thermal:     {type: frames, ext: jpg, note: "filename has index only, no timestamp"}
+  Skeleton:    {type: pose,   note: "gives person bbox for free -- no detector needed"}
+  IMU:         {type: series, ext: csv, sensors: 5}
+  Radar:       {type: series, ext: csv, note: "mmWave; lowest priority"}
+  # "not every clip has every modality" -- build an availability matrix first.
+  # "sampling rates differ across modalities" -- align via filename timestamps.
+
+constraints:
+  max_model_mb: 100           # hard; applies to the shipped checkpoint
+  no_large_pretrained_backbones: true
+  no_closed_apis_or_llms_in_pipeline: true
+  # Architecture family (CNN/RNN/Transformer) is phrased as *encouraged* in the
+  # prose and absent from the formal restrictions list. GCNs are fine; confirm
+  # on the Kaggle forum if you want it in writing.
+
+preprocess:
+  n_frames: 16                # both public notebooks use 16
+  image_size: 112             # 112 or 128; 128 is what the 0.716 notebook used
+  cache_dtype: uint8          # memmap (N, T, C, H, W) -- decode once, not per epoch
+
+train:
+  seed: 42
+  batch_size: 32
+  epochs: 40
+  optimizer: adamw
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  scheduler: cosine
+  label_smoothing: 0.1
+  grad_clip: 1.0
+  amp: true
+  modality_dropout: 0.3       # REQUIRED here: modalities are missing at test time

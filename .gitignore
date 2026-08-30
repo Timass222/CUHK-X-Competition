@@ -1,0 +1,32 @@
+# data and artefacts -- never commit, these are tens of GB
+# игнорим содержимое, но каталоги оставляем в дереве (.gitkeep)
+data/raw/*
+data/extracted/*
+data/cache/*
+data/meta/*
+checkpoints/*
+experiments/*
+!data/raw/.gitkeep
+!data/extracted/.gitkeep
+!data/cache/.gitkeep
+!data/meta/.gitkeep
+!checkpoints/.gitkeep
+!experiments/.gitkeep
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# local
+submission*.csv
+*.log
+
+# сторонние публичные ноутбуки и их разбор -- чужой контент, не тиражируем;
+# всё существенное выжато в docs/findings.md и docs/HANDOFF.md
+notebooks/reference/
+
+# случайный пустой файл от сорвавшейся команды
+nothing)
